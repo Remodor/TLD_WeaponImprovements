@@ -31,15 +31,15 @@ namespace WeaponImprovements
             }
             if (Weapon_Settings.Get().no_fire_delay_after_reload)
             {
-                __instance.FPSCamera.CurrentWeapon.m_WeaponItem.m_FireDelayAfterReload = 0;
+                __instance.FPSCamera.CurrentWeapon.m_GunItem.m_FireDelayAfterReload = 0;
             }
         }
     }
     //* No More Jam Delay
-    [HarmonyPatch(typeof(WeaponItem), "PlayDryFireAudio")]
+    [HarmonyPatch(typeof(GunItem), "PlayDryFireAudio")]
     internal class WeaponItem_PlayDryFireAudio
     {
-        internal static void Postfix(WeaponItem __instance)
+        internal static void Postfix(GunItem __instance)
         {
             if (Weapon_Settings.Get().no_jam_delay)
             {

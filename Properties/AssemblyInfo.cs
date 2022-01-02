@@ -34,5 +34,5 @@ using MelonLoader;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: MelonInfo(typeof(WeaponImprovements.Implementation), "WeaponImprovements", "1.0.0", "Remodor")]
+[assembly: MelonInfo(typeof(WeaponImprovements.Implementation), "WeaponImprovements", "1.1.0", "Remodor")]
 [assembly: MelonGame("Hinterland", "TheLongDark")]

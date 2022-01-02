@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Il2CppSystem.Collections.Generic;
 using UnityEngine;
 
@@ -35,6 +35,42 @@ namespace WeaponImprovements
             }
         }
     }
+
+    //* Prevent aim delay.
+    [HarmonyPatch(typeof(PlayerAnimation), "IsAllowedToFire")]
+    internal class PlayerAnimation_IsAllowedToFire
+    {
+        internal static bool Prefix(PlayerAnimation __instance, ref bool allowHipFire, ref bool __result)
+        {
+            if (!Weapon_Settings.Get().no_fire_delay_after_aim)
+            {
+                return true;
+            }
+            if (GameManager.m_SuppressWeaponAim)
+            {
+                GameManager.GetVpFPSCamera().CurrentShooter.m_NextAllowedFireTime = Time.time;
+                __result = false;
+                return false;
+            }
+            if (!allowHipFire)
+            {
+                if (__instance.m_State != PlayerAnimation.State.Aiming)
+                {
+                    GameManager.GetVpFPSCamera().CurrentShooter.m_NextAllowedFireTime = Time.time;
+                    __result = false;
+                    return false;
+                }
+            }
+            else if (__instance.m_State == PlayerAnimation.State.Equipping || __instance.m_State == PlayerAnimation.State.Dequipping)
+            {
+                GameManager.GetVpFPSCamera().CurrentShooter.m_NextAllowedFireTime = Time.time;
+                __result = false;
+                return false;
+            }
+            __result = true;
+            return false;
+        }
+    }
     //* No More Jam Delay
     [HarmonyPatch(typeof(GunItem), "PlayDryFireAudio")]
     internal class WeaponItem_PlayDryFireAudio
@@ -45,6 +81,23 @@ namespace WeaponImprovements
             {
                 GameManager.GetVpFPSCamera().CurrentShooter.NextAllowedReloadTime = Time.time;
             }
+        }
+    }
+    //* Hide crosshair.
+    [HarmonyPatch(typeof(HUDManager), "ShouldHideCrossHairs")]
+    internal class HUDManager_ShouldHideCrossHairs
+    {
+        internal static bool Prefix(ref bool __result)
+        {
+            if (Weapon_Settings.Get().hide_crosshair
+                || (Weapon_Settings.Get().hide_bow_crosshair
+                && GameManager.GetPlayerManagerComponent().m_ItemInHands
+                && GameManager.GetPlayerManagerComponent().m_ItemInHands.m_BowItem))
+            {
+                __result = true;
+                return false;
+            }
+            return true;
         }
     }
 }

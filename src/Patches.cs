@@ -42,7 +42,7 @@ namespace WeaponImprovements
     {
         internal static bool Prefix(PlayerAnimation __instance, ref bool allowHipFire, ref bool __result)
         {
-            if (!Weapon_Settings.Get().no_fire_delay_after_aim)
+            if (!Weapon_Settings.Get().no_fire_delay_after_aim  || !GameManager.GetVpFPSCamera().CurrentShooter)
             {
                 return true;
             }
